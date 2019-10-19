@@ -7,6 +7,7 @@ import org.apache.dubbo.rpc.RpcException;
 import org.apache.dubbo.rpc.cluster.LoadBalance;
 
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -18,9 +19,14 @@ import java.util.concurrent.ThreadLocalRandom;
  * 选手需要基于此类实现自己的负载均衡算法
  */
 public class UserLoadBalance implements LoadBalance {
-
     @Override
     public <T> Invoker<T> select(List<Invoker<T>> invokers, URL url, Invocation invocation) throws RpcException {
-        return invokers.get(ThreadLocalRandom.current().nextInt(invokers.size()));
+        Random random=new Random();
+        int num= random.nextInt(3);
+        return invokers.get(num);
     }
+//    @Override
+//    public <T> Invoker<T> select(List<Invoker<T>> invokers, URL url, Invocation invocation) throws RpcException {
+//        return invokers.get(ThreadLocalRandom.current().nextInt(invokers.size()));
+//    }
 }
