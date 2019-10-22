@@ -8,7 +8,6 @@ import org.apache.dubbo.rpc.cluster.LoadBalance;
 
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author daofeng.xjf
@@ -19,11 +18,28 @@ import java.util.concurrent.ThreadLocalRandom;
  * 选手需要基于此类实现自己的负载均衡算法
  */
 public class UserLoadBalance implements LoadBalance {
+    private static Random random=new Random();
+    private static int num=random.nextInt(3)+1;
     @Override
     public <T> Invoker<T> select(List<Invoker<T>> invokers, URL url, Invocation invocation) throws RpcException {
-        Random random=new Random();
-        int num= random.nextInt(3);
-        return invokers.get(num);
+        int temp=random.nextInt(3);
+        switch (num){
+            case 0:break;
+            case 1:temp=random.nextInt(2)+1;
+            break;
+            case 2:temp=random.nextInt(2)==0?0:2;
+            break;
+            case 3:temp=random.nextInt(2);
+            break;
+            case 4:temp=1;
+            break;
+            case 5:temp=0;
+            break;
+        }
+        num+=(temp+1);
+        num%=6;
+        System.out.println("------第 "+temp);
+        return invokers.get(temp);
     }
 //    @Override
 //    public <T> Invoker<T> select(List<Invoker<T>> invokers, URL url, Invocation invocation) throws RpcException {
