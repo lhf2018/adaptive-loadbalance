@@ -20,15 +20,28 @@ public class UserLoadBalance implements LoadBalance {
     private static int num=0;
     @Override
     public <T> Invoker<T> select(List<Invoker<T>> invokers, URL url, Invocation invocation) throws RpcException {
-        num=(num+1)%6;
+        num++;
+        num=num%7;
         if(num==0){
             return invokers.get(0);
-        }else if(num==1||num==2){
-            return invokers.get(1);
-        }else {
+        }else if(num>2){
             return invokers.get(2);
+        }else {
+            return invokers.get(1);
         }
     }
+//    @Override
+//    public <T> Invoker<T> select(List<Invoker<T>> invokers, URL url, Invocation invocation) throws RpcException {
+//        num=(num+1)%6;
+//        if(num==0){
+//            return invokers.get(0);
+//        }else if(num==1||num==2){
+//            return invokers.get(1);
+//        }else {
+//            return invokers.get(2);
+//        }
+//    }
+
 //    @Override
 //    public <T> Invoker<T> select(List<Invoker<T>> invokers, URL url, Invocation invocation) throws RpcException {
 //        return invokers.get(ThreadLocalRandom.current().nextInt(invokers.size()));
