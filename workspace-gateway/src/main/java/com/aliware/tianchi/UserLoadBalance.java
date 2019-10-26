@@ -4,6 +4,7 @@ import org.apache.dubbo.common.URL;
 import org.apache.dubbo.rpc.Invocation;
 import org.apache.dubbo.rpc.Invoker;
 import org.apache.dubbo.rpc.RpcException;
+import org.apache.dubbo.rpc.RpcStatus;
 import org.apache.dubbo.rpc.cluster.LoadBalance;
 
 import java.util.List;
@@ -17,28 +18,39 @@ import java.util.List;
  * 选手需要基于此类实现自己的负载均衡算法
  */
 public class UserLoadBalance implements LoadBalance {
-    private static int num=0;
+    private static volatile RpcStatus[] statuses=new RpcStatus[3];//记录每种的访问次数
+    private static int[] weight={1,2,3};
     @Override
     public <T> Invoker<T> select(List<Invoker<T>> invokers, URL url, Invocation invocation) throws RpcException {
-        num++;
-        num=num%7;
-        if(num==0){
-            return invokers.get(0);
-        }else if(num>2){
-            return invokers.get(2);
-        }else {
-            return invokers.get(1);
+        if(statuses[0]==null){
+            statuses[0]=RpcStatus.getStatus(invokers.get(0).getUrl(),invocation.getMethodName());
+            statuses[1]=RpcStatus.getStatus(invokers.get(1).getUrl(),invocation.getMethodName());
+            statuses[2]=RpcStatus.getStatus(invokers.get(2).getUrl(),invocation.getMethodName());
+
         }
+        int index=0;
+        double min=statuses[0].getActive()*1.0/weight[0];
+        for(int i=1;i<invokers.size();i++){
+            double temp=statuses[i].getActive()*1.0/weight[i];
+            if(temp<min){
+                index=i;
+                min=temp;
+            }
+        }
+        RpcStatus.beginCount(invokers.get(index).getUrl(),invocation.getMethodName(),0);
+        return invokers.get(index);
     }
 //    @Override
 //    public <T> Invoker<T> select(List<Invoker<T>> invokers, URL url, Invocation invocation) throws RpcException {
-//        num=(num+1)%6;
+//        num++;
+//        num=num%7;
+//        RpcStatus.getStatus().getActive();
 //        if(num==0){
 //            return invokers.get(0);
-//        }else if(num==1||num==2){
-//            return invokers.get(1);
-//        }else {
+//        }else if(num>2){
 //            return invokers.get(2);
+//        }else {
+//            return invokers.get(1);
 //        }
 //    }
 
