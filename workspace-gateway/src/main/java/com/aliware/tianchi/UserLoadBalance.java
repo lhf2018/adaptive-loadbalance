@@ -19,7 +19,12 @@ import java.util.List;
  */
 public class UserLoadBalance implements LoadBalance {
     private static volatile RpcStatus[] statuses=new RpcStatus[3];//记录每种的访问次数
-    private static int[] weight={1,2,3};
+    private static double[] weight={1,2,3};
+    public static volatile int[] maxThread=new int[3];
+    public static volatile int[] activeThread=new int[3];
+    public static volatile boolean flag=false;
+
+
     @Override
     public <T> Invoker<T> select(List<Invoker<T>> invokers, URL url, Invocation invocation) throws RpcException {
         if(statuses[0]==null){
@@ -29,6 +34,12 @@ public class UserLoadBalance implements LoadBalance {
 
         }
         int index=0;
+        if(flag){
+            weight[0]=1-(activeThread[0]*1.0/maxThread[0]);
+            weight[1]=1-(activeThread[1]*1.0/maxThread[1]);
+            weight[2]=1-(activeThread[2]*1.0/maxThread[2]);
+            flag=false;
+        }
         double min=statuses[0].getActive()*1.0/weight[0];
         for(int i=1;i<invokers.size();i++){
             double temp=statuses[i].getActive()*1.0/weight[i];

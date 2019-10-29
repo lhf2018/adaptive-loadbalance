@@ -1,6 +1,7 @@
 package com.aliware.tianchi;
 
 import org.apache.dubbo.rpc.listener.CallbackListener;
+import org.apache.dubbo.rpc.protocol.dubbo.status.ThreadPoolStatusChecker;
 import org.apache.dubbo.rpc.service.CallbackService;
 
 import java.util.Date;
@@ -25,14 +26,16 @@ public class CallbackServiceImpl implements CallbackService {
                 if (!listeners.isEmpty()) {
                     for (Map.Entry<String, CallbackListener> entry : listeners.entrySet()) {
                         try {
-                            entry.getValue().receiveServerMsg(System.getProperty("quota") + " " + new Date().toString());
+//                            entry.getValue().receiveServerMsg(System.getProperty("quota") + " " + new Date().toString());
+                            String msg=new ThreadPoolStatusChecker().check().getMessage();
+                            entry.getValue().receiveServerMsg(System.getProperty("quota")+" "+msg);
                         } catch (Throwable t1) {
                             listeners.remove(entry.getKey());
                         }
                     }
                 }
             }
-        }, 0, 5000);
+        }, 0, 3000);
     }
 
     private Timer timer = new Timer();
