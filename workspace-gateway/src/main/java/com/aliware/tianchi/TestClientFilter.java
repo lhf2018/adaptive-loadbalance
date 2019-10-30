@@ -30,6 +30,14 @@ public class TestClientFilter implements Filter {
 
     @Override
     public Result onResponse(Result result, Invoker<?> invoker, Invocation invocation) {
+        String machines=invoker.getUrl().toString();
+        if(machines.contains("small")){
+            UserLoadBalance.queue.add(0);
+        }else if(machines.contains("medium")){
+            UserLoadBalance.queue.add(1);
+        }else {
+            UserLoadBalance.queue.add(2);
+        }
         return result;
     }
 }
