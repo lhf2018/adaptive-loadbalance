@@ -27,15 +27,35 @@ public class UserLoadBalance implements LoadBalance {
     public static volatile Queue<Integer> queue=new ConcurrentLinkedQueue<>();
 
     public UserLoadBalance() {
-        for(int i=0;i<200;i++){
-            queue.add(0);
+        for(int i=0;i<1300;i++){
+            int num=i%26;
+            if(num<4){
+                queue.add(0);
+            }else if(num<13){
+                queue.add(1);
+            }else {
+                queue.add(2);
+            }
         }
-        for(int i=0;i<450;i++){
-            queue.add(1);
-        }
-        for(int i=0;i<650;i++){
-            queue.add(2);
-        }
+//        for(int i=0;i<100;i++){
+//            queue.add(0);
+//        }
+//        for(int i=0;i<225;i++){
+//            queue.add(1);
+//        }
+//        for(int i=0;i<325;i++){
+//            queue.add(2);
+//        }
+//
+//        for(int i=0;i<100;i++){
+//            queue.add(0);
+//        }
+//        for(int i=0;i<225;i++){
+//            queue.add(1);
+//        }
+//        for(int i=0;i<325;i++){
+//            queue.add(2);
+//        }
     }
 
     @Override
