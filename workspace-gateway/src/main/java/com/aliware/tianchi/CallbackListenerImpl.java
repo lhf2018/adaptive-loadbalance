@@ -18,7 +18,6 @@ public class CallbackListenerImpl implements CallbackListener {
         String machine=msgs[0];
         int maxThread = Integer.parseInt(msgs[3].split(":")[1].split(",")[0]);
         int activeThread = Integer.parseInt(msgs[6].split(":")[1].split(",")[0]);
-
         int provider=0;
         if(machine.equals("large")){
             provider=2;
