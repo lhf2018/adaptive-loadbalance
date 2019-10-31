@@ -27,7 +27,7 @@ public class UserLoadBalance implements LoadBalance {
     public static volatile Queue<Integer> queue=new ConcurrentLinkedQueue<>();
 
     public UserLoadBalance() {
-        for(int i=0;i<1300;i++){
+        for(int i=0;i<1024;i++){
             int num=i%26;
             if(num<4){
                 queue.add(0);
